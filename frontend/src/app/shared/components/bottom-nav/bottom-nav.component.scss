@@ -1,0 +1,28 @@
+.bottom-nav {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  border-top: 1px solid #e7e7e7;
+  padding: 0.4rem 0 0.6rem;
+
+  a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    color: #6b6b6b;
+    text-decoration: none;
+    font-size: 0.7rem;
+
+    span {
+      font-size: 1.25rem;
+    }
+
+    &.ativo {
+      color: var(--sb-primaria, #1f6f43);
+      font-weight: 600;
+    }
+  }
+}

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>SmartBus.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Application depende do pacote EF Core (não da Infrastructure) só para
+         poder declarar DbSet<T>/IQueryable na abstração IApplicationDbContext.
+         Quem implementa a interface (o DbContext real) mora na Infrastructure. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SmartBus.Domain\SmartBus.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,15 @@
+{
+  "stryker-config": {
+    "project": "SmartBus.Application.csproj",
+    "solution": "../../SmartBus.sln",
+    "test-projects": [
+      "SmartBus.UnitTests.csproj"
+    ],
+    "reporters": [ "html", "progress", "cleartext" ],
+    "thresholds": { "high": 80, "low": 60, "break": 50 },
+    "mutate": [
+      "!**/*Dtos.cs",
+      "!**/DependencyInjection.cs"
+    ]
+  }
+}

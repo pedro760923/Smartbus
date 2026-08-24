@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>SmartBus.UnitTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <!-- EF Core InMemory: usado para dar uma implementação real de
+         IApplicationDbContext aos services em teste. Mockar DbSet<T>
+         diretamente é frágil e testa detalhe de implementação do EF,
+         não a regra de negócio — InMemory é o padrão pragmático aqui. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
+    <PackageReference Include="coverlet.collector" Version="6.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SmartBus.Domain\SmartBus.Domain.csproj" />
+    <ProjectReference Include="..\..\src\SmartBus.Application\SmartBus.Application.csproj" />
+    <ProjectReference Include="..\..\src\SmartBus.Infrastructure\SmartBus.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
