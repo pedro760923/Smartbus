@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SmartBus.Infrastructure.Persistence;
 
 namespace SmartBus.IntegrationTests.Infra;
@@ -21,12 +23,14 @@ public class SmartBusWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureServices(services =>
         {
-            var dbContextDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<SmartBusDbContext>));
-            if (dbContextDescriptor is not null)
-            {
-                services.Remove(dbContextDescriptor);
-            }
+            // Desde o EF Core 8, chamar AddDbContext<T> mais de uma vez para o
+            // mesmo T não substitui a configuração anterior — as duas ações de
+            // configuração (MySQL da Program.cs + SQLite daqui) são combinadas,
+            // e o EF reclama de dois provedores registrados. Por isso é preciso
+            // remover também o IDbContextOptionsConfiguration<T>, não só o
+            // DbContextOptions<T>.
+            services.RemoveAll<DbContextOptions<SmartBusDbContext>>();
+            services.RemoveAll<IDbContextOptionsConfiguration<SmartBusDbContext>>();
 
             _connection.Open();
 

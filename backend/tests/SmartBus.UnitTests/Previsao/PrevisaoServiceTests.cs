@@ -48,7 +48,8 @@ public class PrevisaoServiceTests
 
         var referencia = new DateTime(2026, 8, 17, 8, 0, 0, DateTimeKind.Utc); // segunda, faixa 08h-10h
 
-        // 5 reportes na mesma segunda-feira, mesma faixa horária, todos "Cheio".
+        // 5 reportes na mesma segunda-feira, mesma faixa horária (08h-10h), todos "Cheio".
+        // Offsets positivos e pequenos para não cruzar para a faixa 06h-08h.
         for (var i = 0; i < 5; i++)
         {
             db.Reportes.Add(new Reporte
@@ -57,7 +58,7 @@ public class PrevisaoServiceTests
                 UsuarioId = usuario.Id,
                 NivelLotacao = NivelLotacao.Cheio,
                 Valido = true,
-                CriadoEm = referencia.AddMinutes(-i * 10)
+                CriadoEm = referencia.AddMinutes(i * 5)
             });
         }
         await db.SaveChangesAsync();

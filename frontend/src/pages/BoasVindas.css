@@ -1,0 +1,89 @@
+.aviso {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 1.75rem 2.5rem;
+  background: #fff;
+}
+
+.aviso__ilustracao {
+  margin-bottom: 1.5rem;
+}
+
+.aviso h1 {
+  margin: 0 0 1.75rem;
+  font-size: 1.3rem;
+  line-height: 1.35;
+  color: var(--sb-primaria);
+  font-weight: 700;
+}
+
+.aviso__passos {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: flex;
+  gap: 1.25rem;
+}
+
+.aviso__passos li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--sb-texto-suave);
+  width: 90px;
+}
+
+.aviso__icone {
+  font-size: 1.5rem;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sb-fundo);
+  border-radius: 16px;
+}
+
+.aviso__legenda {
+  color: var(--sb-texto-suave);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  max-width: 320px;
+}
+
+.aviso__rodape {
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--sb-texto-suave);
+}
+
+.aviso__rodape a {
+  color: var(--sb-primaria);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.btn--primario {
+  display: inline-block;
+  width: 100%;
+  max-width: 320px;
+  padding: 0.95rem;
+  border-radius: var(--sb-raio-pill);
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  background: var(--sb-primaria);
+  color: #fff;
+  box-shadow: var(--sb-sombra);
+  text-align: center;
+}

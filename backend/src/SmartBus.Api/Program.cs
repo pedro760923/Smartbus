@@ -17,19 +17,19 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new() { Title = "SmartBus API", Version = "v1" });
 
-    var esquemaJwt = new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    var esquemaJwt = new Microsoft.OpenApi.OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Type = Microsoft.OpenApi.SecuritySchemeType.Http,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        In = Microsoft.OpenApi.ParameterLocation.Header,
         Description = "Informe apenas o token JWT (sem o prefixo 'Bearer ')."
     };
     options.AddSecurityDefinition("Bearer", esquemaJwt);
-    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    options.AddSecurityRequirement(documento => new Microsoft.OpenApi.OpenApiSecurityRequirement
     {
-        { esquemaJwt, Array.Empty<string>() }
+        { new Microsoft.OpenApi.OpenApiSecuritySchemeReference("Bearer", documento), new List<string>() }
     });
 });
 
