@@ -1,0 +1,73 @@
+.dashboard {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.kpi {
+  background: var(--sb-fundo);
+  border-radius: 14px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.kpi__valor {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--sb-primaria);
+}
+
+.kpi__label {
+  font-size: 0.8rem;
+  color: var(--sb-texto-suave);
+}
+
+.ranking h3,
+.previsao-espera h3,
+.mapa-calor h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.ranking ul,
+.previsao-espera ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ranking li,
+.previsao-espera li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.7rem 0.9rem;
+  background: #fff;
+  border: 1px solid var(--sb-borda);
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.mapa-calor__mapa {
+  width: 100%;
+  height: 320px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.carregando {
+  text-align: center;
+  color: #888;
+  margin-top: 3rem;
+}

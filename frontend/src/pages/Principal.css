@@ -1,0 +1,236 @@
+.home {
+  padding: 1.5rem 1.25rem 2.5rem;
+}
+
+.home__topo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.home__topo-marca {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.home__topo-marca strong {
+  font-size: 1.15rem;
+  color: var(--sb-primaria);
+  line-height: 1.1;
+}
+
+.home__topo-marca span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sb-secundaria);
+}
+
+.home__sair {
+  background: none;
+  border: none;
+  color: var(--sb-texto-suave);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+}
+
+.home__busca {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--sb-cartao);
+  border: 1px solid var(--sb-borda);
+  border-radius: var(--sb-raio-pill);
+  padding: 0.8rem 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.home__busca-icone {
+  opacity: 0.6;
+}
+
+.home__busca input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: transparent;
+  min-width: 0;
+}
+
+.home__paradas-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.home__paradas-cabecalho h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.home__paradas-cabecalho small {
+  color: var(--sb-texto-suave);
+}
+
+.cartao-destaque {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: var(--sb-primaria);
+  color: #fff;
+  border: none;
+  border-radius: var(--sb-raio);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  box-shadow: var(--sb-sombra);
+  text-align: left;
+}
+
+.cartao-destaque__icone {
+  font-size: 1.6rem;
+}
+
+.cartao-destaque__texto {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.cartao-destaque__texto strong {
+  font-size: 0.95rem;
+}
+
+.cartao-destaque__texto small {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.cartao-destaque__seta {
+  font-size: 1.4rem;
+  opacity: 0.8;
+}
+
+.aviso-caixa {
+  background: var(--sb-amarelo-bg);
+  color: #8a5a00;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+}
+
+.lista-paradas {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.lista-paradas li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--sb-cartao);
+  border: 1px solid var(--sb-borda);
+  border-radius: var(--sb-raio);
+  cursor: pointer;
+}
+
+.lista-paradas__icone {
+  font-size: 1.2rem;
+}
+
+.lista-paradas__info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.lista-paradas__info small {
+  color: var(--sb-texto-suave);
+  font-size: 0.75rem;
+}
+
+.lista-paradas__seta {
+  color: var(--sb-texto-suave);
+  font-size: 1.3rem;
+}
+
+.lista-paradas__vazio {
+  justify-content: center;
+  color: var(--sb-texto-suave);
+  cursor: default;
+}
+
+.cartao-avaliacao {
+  background: var(--sb-cartao);
+  border: 1px solid var(--sb-borda);
+  border-radius: var(--sb-raio);
+  padding: 1.1rem;
+  text-align: center;
+}
+
+.cartao-avaliacao__titulo {
+  margin: 0 0 0.6rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.cartao-avaliacao__estrelas {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+  font-size: 1.6rem;
+}
+
+.cartao-avaliacao__estrelas span {
+  color: #dfe3ea;
+  cursor: pointer;
+}
+
+.cartao-avaliacao__estrelas span.ativa {
+  color: var(--sb-amarelo);
+}
+
+.cartao-avaliacao__obrigado {
+  margin: 0;
+  font-weight: 600;
+  color: var(--sb-secundaria);
+}
+
+.btn {
+  border: none;
+  border-radius: var(--sb-raio-pill);
+  padding: 0.7rem 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn--primario {
+  background: var(--sb-primaria);
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsivo: em telas mais largas, listas e o card de destaque
+   ganham mais respiro em vez de esticar por toda a largura do cartão. */
+@media (min-width: 420px) {
+  .home__paradas-cabecalho h3 {
+    font-size: 1.05rem;
+  }
+}

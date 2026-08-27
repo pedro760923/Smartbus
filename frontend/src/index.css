@@ -1,0 +1,93 @@
+@import "leaflet/dist/leaflet.css";
+
+:root {
+  /* Marca */
+  --sb-primaria: #1e4d94;
+  --sb-primaria-escura: #133769;
+  --sb-secundaria: #2fa360;
+
+  /* Status de lotação */
+  --sb-verde: #34a853;
+  --sb-verde-bg: #e6f6ea;
+  --sb-amarelo: #f2b705;
+  --sb-amarelo-bg: #fff6dc;
+  --sb-vermelho: #e0473e;
+  --sb-vermelho-bg: #fde6e4;
+
+  /* Neutros */
+  --sb-fundo: #f4f6fb;
+  --sb-cartao: #ffffff;
+  --sb-texto: #1b2333;
+  --sb-texto-suave: #6b7686;
+  --sb-borda: #e7ebf3;
+
+  --sb-raio: 18px;
+  --sb-raio-pill: 999px;
+  --sb-sombra: 0 10px 30px rgba(20, 40, 90, 0.08);
+
+  /* Largura do "cartão de app" — além disso a tela vira uma coluna
+     centralizada com moldura, em vez de esticar a UI mobile pela tela toda. */
+  --sb-largura-app: 480px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Poppins', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--sb-fundo);
+  color: var(--sb-texto);
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ---------- Moldura responsiva ---------- */
+/* Em telas largas (tablet/desktop), a UI (pensada para mobile) fica
+   centralizada como um "cartão de app", em vez de esticar os componentes
+   por uma largura que eles não foram desenhados para preencher. */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.app-shell__tela {
+  width: 100%;
+  max-width: var(--sb-largura-app);
+  min-height: 100vh;
+  background: var(--sb-cartao);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  .app-shell {
+    background: linear-gradient(160deg, #eef3fb 0%, #dfe7f5 100%);
+    padding: 2.5rem 1rem;
+    align-items: flex-start;
+  }
+
+  .app-shell__tela {
+    min-height: calc(100vh - 5rem);
+    border-radius: 28px;
+    box-shadow: 0 30px 60px rgba(20, 40, 90, 0.18);
+    overflow: hidden;
+  }
+}
+
+.leaflet-container {
+  font-family: inherit;
+}

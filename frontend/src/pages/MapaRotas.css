@@ -1,0 +1,24 @@
+.mapa-rotas {
+  padding: 0 0 2.5rem;
+}
+
+.mapa-rotas__mapa {
+  width: 100%;
+  height: 60vh;
+  min-height: 380px;
+}
+
+.mapa-rotas__acoes {
+  padding: 1rem 1.25rem;
+}
+
+.mapa-rotas .btn {
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--sb-primaria);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
