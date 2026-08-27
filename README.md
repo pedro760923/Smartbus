@@ -1,10 +1,10 @@
-# SmartBus — Backend C# (.NET 8) + Frontend Angular
+# SmartBus — Backend C# (.NET 10) + Frontend React
 
 Implementação do projeto SmartBus (monitoramento colaborativo de lotação de
 ônibus) descrito no documento `SmartBus_ABNT_v5.docx`, com:
 
-- **Backend**: ASP.NET Core 8 Web API (C#), Entity Framework Core + SQLite, autenticação JWT.
-- **Frontend**: Angular 18 (standalone components), consumindo a API via HTTP, com mapa via Leaflet/OpenStreetMap.
+- **Backend**: ASP.NET Core 10 Web API (C#), Entity Framework Core + SQLite, autenticação JWT.
+- **Frontend**: React
 
 ## Estrutura
 
