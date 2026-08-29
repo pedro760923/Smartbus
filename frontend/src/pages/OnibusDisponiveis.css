@@ -126,6 +126,20 @@
 .status--amarelo { background: var(--sb-amarelo-bg); color: #9a7500; }
 .status--vermelho { background: var(--sb-vermelho-bg); color: var(--sb-vermelho); }
 
+.painel__status-coluna {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.painel__votos {
+  color: var(--sb-texto-suave);
+  font-size: 0.65rem;
+  white-space: nowrap;
+}
+
 /* Responsivo: lista em duas colunas quando há espaço de sobra. */
 @media (min-width: 460px) {
   .painel__lista {

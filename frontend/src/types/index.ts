@@ -38,12 +38,20 @@ export interface RegistroRequest {
   senha: string;
 }
 
+export interface VotoNivel {
+  nivel: NivelLotacao;
+  quantidade: number;
+  percentual: number;
+}
+
 export interface Linha {
   id: number;
   codigo: string;
   nome: string;
   descricao?: string;
   nivelLotacaoAtual?: NivelLotacao;
+  totalVotos: number;
+  distribuicaoLotacao: VotoNivel[];
 }
 
 export interface Parada {
@@ -107,4 +115,27 @@ export interface DashboardKpis {
   linhasComMaiorSuperlotacao: LinhaSuperlotacao[];
   mapaDeCalor: PontoCalor[];
   previsaoTempoEspera: FaixaEspera[];
+}
+
+export interface EnderecoSugestao {
+  endereco: string;
+  latitude: number;
+  longitude: number;
+  doHistorico: boolean;
+}
+
+export interface NovoHistorico {
+  termo: string;
+  endereco: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface HistoricoBusca {
+  id: number;
+  termo: string;
+  endereco: string;
+  latitude: number;
+  longitude: number;
+  criadoEm: string;
 }

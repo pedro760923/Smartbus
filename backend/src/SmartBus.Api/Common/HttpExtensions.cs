@@ -67,6 +67,14 @@ public static class HttpExtensions
         public const string Get_Kpis = "kpis";
     }
 
+    public static class Enderecos
+    {
+        public const string Base = "api/enderecos";
+        public const string Get_Buscar = "";
+        public const string Post_RegistrarHistorico = "historico";
+        public const string Get_HistoricoRecente = "historico";
+    }
+
     /// <summary>
     /// Extrai o id do usuário autenticado a partir do token JWT (claim
     /// "sub"/NameIdentifier). Centralizado aqui porque antes do refactor

@@ -15,6 +15,7 @@ public interface IApplicationDbContext
     DbSet<Parada> Paradas { get; }
     DbSet<RotaParada> RotaParadas { get; }
     DbSet<Reporte> Reportes { get; }
+    DbSet<HistoricoBusca> HistoricosBusca { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

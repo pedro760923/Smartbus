@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as L from 'leaflet';
 import { api } from '../lib/api';
-import { NivelLotacao, type Linha, type Rota } from '../types';
+import { NIVEL_LOTACAO_LABEL, NivelLotacao, type Linha, type Rota } from '../types';
 import './OnibusDisponiveis.css';
 
 const CENTRO_PADRAO: [number, number] = [-23.6547, -46.5382];
@@ -146,9 +146,18 @@ export function OnibusDisponiveis() {
                   <strong>{linha.nome}</strong>
                   <small>Ver rota e reportar lotação</small>
                 </span>
-                <span className={`status status--${status}`}>
-                  <IconePessoa status={status} />
-                  {labelLotacao(linha.nivelLotacaoAtual)}
+                <span className="painel__status-coluna">
+                  <span className={`status status--${status}`}>
+                    <IconePessoa status={status} />
+                    {labelLotacao(linha.nivelLotacaoAtual)}
+                  </span>
+                  {linha.totalVotos > 0 && (
+                    <small className="painel__votos">
+                      {linha.distribuicaoLotacao
+                        .map((voto) => `${voto.quantidade} ${NIVEL_LOTACAO_LABEL[voto.nivel].toLowerCase()}`)
+                        .join(' · ')}
+                    </small>
+                  )}
                 </span>
               </li>
             );
