@@ -8,10 +8,11 @@ using Xunit;
 namespace SmartBus.UnitTests.Linhas;
 
 /// <summary>
-/// Cobre especificamente a regra que motivou o refactor: o cálculo de
-/// "nível de lotação atual" (janela de 30min sobre reportes válidos,
-/// pegando o mais recente). Esta é a lógica que antes vivia duplicada
-/// implicitamente em mais de um controller.
+/// Cobre a regra de "nível de lotação atual": janela de 30min sobre
+/// reportes válidos, vencendo por MAIORIA de votos (empate desempatado
+/// pelo voto mais recente). Antes essa regra pegava só o relato mais
+/// recente — o que fazia um único voto isolado sobrescrever a opinião
+/// de muitos.
 /// </summary>
 public class LinhaServiceTests
 {
@@ -127,5 +128,61 @@ public class LinhaServiceTests
         var resultado = await service.ListarAsync("437");
 
         resultado.Should().ContainSingle(l => l.Codigo == "437");
+    }
+
+    [Fact]
+    public async Task ObterPorIdAsync_MaioriaDeVotosDeveVencerRelatoMaisRecente()
+    {
+        using var db = InMemoryDbFactory.Criar();
+        var linha = new Linha { Codigo = "437", Nome = "Linha A" };
+        var usuario = new Usuario { Nome = "Aluno", Email = "aluno@fsa.edu.br", SenhaHash = "x" };
+        db.Linhas.Add(linha);
+        db.Usuarios.Add(usuario);
+        await db.SaveChangesAsync();
+
+        db.Reportes.AddRange(
+            new Reporte { LinhaId = linha.Id, UsuarioId = usuario.Id, NivelLotacao = NivelLotacao.Cheio, Valido = true, CriadoEm = DateTime.UtcNow.AddMinutes(-25) },
+            new Reporte { LinhaId = linha.Id, UsuarioId = usuario.Id, NivelLotacao = NivelLotacao.Cheio, Valido = true, CriadoEm = DateTime.UtcNow.AddMinutes(-15) },
+            new Reporte { LinhaId = linha.Id, UsuarioId = usuario.Id, NivelLotacao = NivelLotacao.Cheio, Valido = true, CriadoEm = DateTime.UtcNow.AddMinutes(-10) },
+            new Reporte { LinhaId = linha.Id, UsuarioId = usuario.Id, NivelLotacao = NivelLotacao.SuperLotado, Valido = true, CriadoEm = DateTime.UtcNow.AddMinutes(-1) }
+        );
+        await db.SaveChangesAsync();
+
+        var service = new LinhaService(db);
+        var resultado = await service.ObterPorIdAsync(linha.Id);
+
+        resultado!.NivelLotacaoAtual.Should().Be(NivelLotacao.Cheio);
+    }
+
+    [Fact]
+    public async Task ObterPorIdAsync_DeveRetornarTotalETistribuicaoDeVotosCorretos()
+    {
+        using var db = InMemoryDbFactory.Criar();
+        var linha = new Linha { Codigo = "437", Nome = "Linha A" };
+        var usuario = new Usuario { Nome = "Aluno", Email = "aluno@fsa.edu.br", SenhaHash = "x" };
+        db.Linhas.Add(linha);
+        db.Usuarios.Add(usuario);
+        await db.SaveChangesAsync();
+
+        db.Reportes.AddRange(
+            new Reporte { LinhaId = linha.Id, UsuarioId = usuario.Id, NivelLotacao = NivelLotacao.Cheio, Valido = true, CriadoEm = DateTime.UtcNow.AddMinutes(-20) },
+            new Reporte { LinhaId = linha.Id, UsuarioId = usuario.Id, NivelLotacao = NivelLotacao.Cheio, Valido = true, CriadoEm = DateTime.UtcNow.AddMinutes(-15) },
+            new Reporte { LinhaId = linha.Id, UsuarioId = usuario.Id, NivelLotacao = NivelLotacao.Vazio, Valido = true, CriadoEm = DateTime.UtcNow.AddMinutes(-5) }
+        );
+        await db.SaveChangesAsync();
+
+        var service = new LinhaService(db);
+        var resultado = await service.ObterPorIdAsync(linha.Id);
+
+        resultado!.TotalVotos.Should().Be(3);
+        resultado.DistribuicaoLotacao.Should().HaveCount(2);
+
+        var votosCheio = resultado.DistribuicaoLotacao.Single(v => v.Nivel == NivelLotacao.Cheio);
+        votosCheio.Quantidade.Should().Be(2);
+        votosCheio.Percentual.Should().BeApproximately(66.7, 0.1);
+
+        var votosVazio = resultado.DistribuicaoLotacao.Single(v => v.Nivel == NivelLotacao.Vazio);
+        votosVazio.Quantidade.Should().Be(1);
+        votosVazio.Percentual.Should().BeApproximately(33.3, 0.1);
     }
 }

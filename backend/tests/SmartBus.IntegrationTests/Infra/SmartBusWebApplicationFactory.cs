@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SmartBus.Application.Abstractions;
 using SmartBus.Infrastructure.Persistence;
 
 namespace SmartBus.IntegrationTests.Infra;
@@ -36,6 +37,13 @@ public class SmartBusWebApplicationFactory : WebApplicationFactory<Program>
 
             services.AddDbContext<SmartBusDbContext>(options =>
                 options.UseSqlite(_connection));
+
+            // Evita chamadas reais ao Nominatim durante os testes de
+            // integração/CI — RemoveAll é necessário aqui pelo mesmo
+            // motivo do DbContext acima (AddHttpClient também registra
+            // via IHttpClientFactory, não é só um AddScoped simples).
+            services.RemoveAll<IGeocodingService>();
+            services.AddSingleton<IGeocodingService, FakeGeocodingService>();
         });
     }
 
