@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SmartBus.Application.Abstractions;
 using SmartBus.Application.Common;
 using SmartBus.Infrastructure.Geocoding;
+using SmartBus.Infrastructure.IA;
 using SmartBus.Infrastructure.Persistence;
 using SmartBus.Infrastructure.Security;
 
@@ -31,6 +32,12 @@ public static class DependencyInjection
         {
             client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
             client.DefaultRequestHeaders.UserAgent.ParseAdd(configuration["Geocoding:UserAgent"] ?? "SmartBus/1.0");
+        });
+
+        services.AddHttpClient<IChatIaService, GeminiChatService>(client =>
+        {
+            client.BaseAddress = new Uri("https://generativelanguage.googleapis.com/v1beta/");
+            client.DefaultRequestHeaders.Add("x-goog-api-key", configuration["Gemini:ApiKey"] ?? "");
         });
 
         return services;

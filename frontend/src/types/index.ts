@@ -139,3 +139,19 @@ export interface HistoricoBusca {
   longitude: number;
   criadoEm: string;
 }
+
+export type PapelMensagemChat = 'usuario' | 'assistente';
+
+export interface MensagemChat {
+  papel: PapelMensagemChat;
+  texto: string;
+}
+
+export interface PerguntaChatRequest {
+  mensagem: string;
+  historico: { papel: PapelMensagemChat; texto: string }[];
+}
+
+export interface RespostaChat {
+  resposta: string;
+}

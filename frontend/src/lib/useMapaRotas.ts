@@ -15,10 +15,13 @@ export interface RotaParaDesenhar {
 
 /**
  * Desenha uma ou mais rotas de ônibus num Google Map: o traçado real das
- * ruas entre as paradas (via Directions API, não linha reta) + um marcador
- * por parada com InfoWindow. Compartilhado por OnibusDisponiveis, MapaRotas
- * e ReportarLotacao — as três páginas que antes duplicavam essa lógica com
- * Leaflet.
+ * ruas entre as paradas + um marcador por parada com InfoWindow. Compartilhado
+ * por OnibusDisponiveis, MapaRotas e ReportarLotacao.
+ *
+ * Usa a Routes API nova (`google.maps.routes.Route.computeRoutes`), não o
+ * `DirectionsService`/`DirectionsRenderer` legado — esse foi depreciado pelo
+ * Google e, em projetos novos, costuma vir desabilitado por padrão (retorna
+ * REQUEST_DENIED mesmo com a Maps JavaScript API habilitada).
  */
 export function useMapaRotas(
   containerRef: RefObject<HTMLDivElement | null>,
@@ -27,7 +30,7 @@ export function useMapaRotas(
 ) {
   const mapaRef = useRef<google.maps.Map | null>(null);
   const prontoRef = useRef<Promise<google.maps.Map> | null>(null);
-  const renderersRef = useRef<google.maps.DirectionsRenderer[]>([]);
+  const polylinesRef = useRef<google.maps.Polyline[]>([]);
   const marcadoresRef = useRef<google.maps.Marker[]>([]);
 
   function obterMapa(): Promise<google.maps.Map> {
@@ -48,9 +51,9 @@ export function useMapaRotas(
   }
 
   function limparDesenho() {
-    renderersRef.current.forEach((r) => r.setMap(null));
+    polylinesRef.current.forEach((p) => p.setMap(null));
     marcadoresRef.current.forEach((m) => m.setMap(null));
-    renderersRef.current = [];
+    polylinesRef.current = [];
     marcadoresRef.current = [];
   }
 
@@ -88,30 +91,32 @@ export function useMapaRotas(
       if (rota.paradas.length > 1) {
         const origem = rota.paradas[0];
         const destino = rota.paradas[rota.paradas.length - 1];
-        const waypoints = rota.paradas.slice(1, -1).map((p) => ({
-          location: { lat: p.latitude, lng: p.longitude },
-          stopover: true
+        const intermediates = rota.paradas.slice(1, -1).map((p) => ({
+          location: { lat: p.latitude, lng: p.longitude }
         }));
 
-        const renderer = new google.maps.DirectionsRenderer({
-          map: mapa,
-          suppressMarkers: true,
-          polylineOptions: { strokeColor: rota.cor, strokeWeight: 4 }
-        });
-        renderersRef.current.push(renderer);
-
         try {
-          const directionsService = new google.maps.DirectionsService();
-          const resultado = await directionsService.route({
+          const { routes } = await google.maps.routes.Route.computeRoutes({
             origin: { lat: origem.latitude, lng: origem.longitude },
             destination: { lat: destino.latitude, lng: destino.longitude },
-            waypoints,
-            travelMode: google.maps.TravelMode.DRIVING
+            intermediates,
+            travelMode: google.maps.TravelMode.DRIVING,
+            fields: ['path']
           });
-          renderer.setDirections(resultado);
+
+          const caminho = routes?.[0]?.path;
+          if (caminho && caminho.length > 0) {
+            const polyline = new google.maps.Polyline({
+              map: mapa,
+              path: caminho,
+              strokeColor: rota.cor,
+              strokeWeight: 4
+            });
+            polylinesRef.current.push(polyline);
+          }
         } catch {
-          // Se a Directions API falhar (chave sem a API habilitada, sem
-          // rota viável entre os pontos etc.), os marcadores das paradas
+          // Se a Routes API falhar (chave sem a API habilitada, sem rota
+          // viável entre os pontos etc.), os marcadores das paradas
           // continuam visíveis mesmo sem o traçado da rota.
         }
       }
