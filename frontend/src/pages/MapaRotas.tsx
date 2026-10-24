@@ -1,46 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import * as L from 'leaflet';
 import { api } from '../lib/api';
+import { useMapaRotas } from '../lib/useMapaRotas';
 import { Header } from '../components/Header';
 import type { Rota } from '../types';
 import './MapaRotas.css';
 
 const CENTRO_PADRAO: [number, number] = [-23.6486, -46.5389];
+const COR_ROTA = '#1e4d94';
 
 export function MapaRotas() {
   const { linhaId } = useParams<{ linhaId: string }>();
   const mapaRef = useRef<HTMLDivElement>(null);
+  const { desenharRotas } = useMapaRotas(mapaRef, CENTRO_PADRAO, 14);
   const [rota, setRota] = useState<Rota | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!linhaId || !mapaRef.current) return;
-
-    const mapa = L.map(mapaRef.current).setView(CENTRO_PADRAO, 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19
-    }).addTo(mapa);
+    if (!linhaId) return;
 
     api.get<Rota>(`/rotas/${linhaId}`).then(({ data }) => {
       setRota(data);
       const paradasOrdenadas = [...data.paradas].sort((a, b) => a.ordem - b.ordem);
-      const pontos = paradasOrdenadas.map((p) => [p.latitude, p.longitude] as [number, number]);
-
-      paradasOrdenadas.forEach((parada) => {
-        L.marker([parada.latitude, parada.longitude]).addTo(mapa).bindPopup(parada.nome);
-      });
-
-      if (pontos.length > 1) {
-        L.polyline(pontos, { color: '#1e4d94', weight: 4 }).addTo(mapa);
-        mapa.fitBounds(L.latLngBounds(pontos), { padding: [24, 24] });
-      }
+      desenharRotas([{ paradas: paradasOrdenadas, cor: COR_ROTA, linhaCodigo: data.linhaCodigo }]);
     });
-
-    return () => {
-      mapa.remove();
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linhaId]);
 
   return (

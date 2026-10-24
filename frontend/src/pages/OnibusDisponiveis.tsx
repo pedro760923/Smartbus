@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as L from 'leaflet';
 import { api } from '../lib/api';
+import { useDebounce } from '../lib/useDebounce';
+import { useMapaRotas } from '../lib/useMapaRotas';
 import { NIVEL_LOTACAO_LABEL, NivelLotacao, type Linha, type Rota } from '../types';
 import './OnibusDisponiveis.css';
 
@@ -35,82 +36,47 @@ function IconePessoa({ status }: { status: StatusLotacao }) {
 
 export function OnibusDisponiveis() {
   const mapaRef = useRef<HTMLDivElement>(null);
-  const mapaInstancia = useRef<L.Map | null>(null);
+  const { desenharRotas } = useMapaRotas(mapaRef, CENTRO_PADRAO, 13);
   const [linhas, setLinhas] = useState<Linha[]>([]);
   const [termo, setTermo] = useState('');
   const [coresPorLinha, setCoresPorLinha] = useState<Map<number, string>>(new Map());
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!mapaRef.current || mapaInstancia.current) return;
-
-    const mapa = L.map(mapaRef.current).setView(CENTRO_PADRAO, 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19
-    }).addTo(mapa);
-    mapaInstancia.current = mapa;
-
-    return () => {
-      mapa.remove();
-      mapaInstancia.current = null;
-    };
-  }, []);
+  const termoDebounced = useDebounce(termo, 400);
 
   useEffect(() => {
     buscar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [termo]);
+  }, [termoDebounced]);
 
   function buscar() {
     api
-      .get<Linha[]>('/linhas', { params: termo ? { termo } : undefined })
+      .get<Linha[]>('/linhas', { params: termoDebounced ? { termo: termoDebounced } : undefined })
       .then((resp) => {
         setLinhas(resp.data);
-        desenharRotas(resp.data);
+        desenharNoMapa(resp.data);
       });
   }
 
-  function desenharRotas(linhasParaDesenhar: Linha[]) {
-    const mapa = mapaInstancia.current;
-    if (!mapa || linhasParaDesenhar.length === 0) return;
+  function desenharNoMapa(linhasParaDesenhar: Linha[]) {
+    if (linhasParaDesenhar.length === 0) return;
 
     Promise.all(linhasParaDesenhar.map((linha) => api.get<Rota>(`/rotas/${linha.id}`))).then((respostas) => {
       const novasCores = new Map<number, string>();
-      const todosPontos: [number, number][] = [];
 
-      mapa.eachLayer((camada) => {
-        if (!(camada instanceof L.TileLayer)) mapa.removeLayer(camada);
-      });
-
-      respostas.forEach(({ data: rota }, indice) => {
+      const rotasParaDesenhar = respostas.map(({ data: rota }, indice) => {
         const cor = CORES_ROTA[indice % CORES_ROTA.length];
         novasCores.set(rota.linhaId, cor);
 
         const paradasOrdenadas = [...rota.paradas].sort((a, b) => a.ordem - b.ordem);
-        const pontos = paradasOrdenadas.map((p) => [p.latitude, p.longitude] as [number, number]);
-        pontos.forEach((ponto) => todosPontos.push(ponto));
-
-        if (pontos.length > 1) {
-          L.polyline(pontos, { color: cor, weight: 4 }).addTo(mapa);
-        }
-
-        paradasOrdenadas.forEach((parada) => {
-          L.circleMarker([parada.latitude, parada.longitude], {
-            radius: 5,
-            color: cor,
-            fillColor: cor,
-            fillOpacity: 0.9
-          })
-            .addTo(mapa)
-            .bindPopup(`${rota.linhaCodigo} · ${parada.nome}`);
-        });
+        return {
+          paradas: paradasOrdenadas,
+          cor,
+          linhaCodigo: rota.linhaCodigo
+        };
       });
 
       setCoresPorLinha(novasCores);
-      if (todosPontos.length > 1) {
-        mapa.fitBounds(L.latLngBounds(todosPontos), { padding: [24, 24] });
-      }
+      desenharRotas(rotasParaDesenhar);
     });
   }
 

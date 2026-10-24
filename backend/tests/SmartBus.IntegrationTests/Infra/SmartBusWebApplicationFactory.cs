@@ -44,6 +44,11 @@ public class SmartBusWebApplicationFactory : WebApplicationFactory<Program>
             // via IHttpClientFactory, não é só um AddScoped simples).
             services.RemoveAll<IGeocodingService>();
             services.AddSingleton<IGeocodingService, FakeGeocodingService>();
+
+            // Mesmo motivo: evita chamadas reais ao Gemini (rede + cota
+            // gratuita) durante os testes de integração/CI.
+            services.RemoveAll<IChatIaService>();
+            services.AddSingleton<IChatIaService, FakeChatIaService>();
         });
     }
 

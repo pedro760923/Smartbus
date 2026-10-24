@@ -75,6 +75,12 @@ public static class HttpExtensions
         public const string Get_HistoricoRecente = "historico";
     }
 
+    public static class Assistente
+    {
+        public const string Base = "api/assistente";
+        public const string Post_Mensagem = "mensagem";
+    }
+
     /// <summary>
     /// Extrai o id do usuário autenticado a partir do token JWT (claim
     /// "sub"/NameIdentifier). Centralizado aqui porque antes do refactor

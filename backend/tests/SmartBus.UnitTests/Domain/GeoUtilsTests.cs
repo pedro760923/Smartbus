@@ -17,7 +17,7 @@ public class GeoUtilsTests
     [Fact]
     public void DistanciaMetros_PontosConhecidos_DeveAproximarValorEsperado()
     {
-        // Campus FSA -> Terminal Santo André (dados do DbSeeder), ~1.6km em linha reta.
+        // Dois pontos em Santo André, ~1km em linha reta (valor de referência calculado manualmente).
         var distancia = GeoUtils.DistanciaMetros(-23.6639, -46.5383, -23.6547, -46.5382);
 
         distancia.Should().BeApproximately(1024, 150);

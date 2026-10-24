@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAdmin, RequireAuth } from './components/RequireAuth';
+import { AssistenteChat } from './components/AssistenteChat';
+import { useAuth } from './lib/auth';
 import { Splash } from './pages/Splash';
 import { BoasVindas } from './pages/BoasVindas';
 import { Login } from './pages/Login';
@@ -12,6 +14,8 @@ import { ConfirmacaoReporte } from './pages/ConfirmacaoReporte';
 import { Dashboard } from './pages/Dashboard';
 
 export default function App() {
+  const { autenticado } = useAuth();
+
   return (
     <div className="app-shell">
       <div className="app-shell__tela">
@@ -37,6 +41,8 @@ export default function App() {
           <Route path="*" element={<Navigate to="/boas-vindas" replace />} />
         </Routes>
       </div>
+
+      {autenticado && <AssistenteChat />}
     </div>
   );
 }
