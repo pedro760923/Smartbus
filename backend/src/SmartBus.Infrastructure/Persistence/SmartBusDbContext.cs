@@ -13,6 +13,7 @@ public class SmartBusDbContext : DbContext, IApplicationDbContext
     public DbSet<Parada> Paradas => Set<Parada>();
     public DbSet<RotaParada> RotaParadas => Set<RotaParada>();
     public DbSet<Reporte> Reportes => Set<Reporte>();
+    public DbSet<HistoricoBusca> HistoricosBusca => Set<HistoricoBusca>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -60,5 +61,14 @@ public class SmartBusDbContext : DbContext, IApplicationDbContext
 
         modelBuilder.Entity<Reporte>()
             .HasIndex(r => new { r.LinhaId, r.CriadoEm });
+
+        modelBuilder.Entity<HistoricoBusca>()
+            .HasOne(h => h.Usuario)
+            .WithMany(u => u.HistoricosBusca)
+            .HasForeignKey(h => h.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<HistoricoBusca>()
+            .HasIndex(h => new { h.UsuarioId, h.CriadoEm });
     }
 }

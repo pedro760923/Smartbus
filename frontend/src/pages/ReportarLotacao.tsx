@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import * as L from 'leaflet';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/auth';
+import { useMapaRotas } from '../lib/useMapaRotas';
 import { NivelLotacao, type Linha, type NovoReporte, type Rota } from '../types';
 import './ReportarLotacao.css';
 
 const CENTRO_PADRAO: [number, number] = [-23.6547, -46.5382];
+const COR_ROTA = '#1e4d94';
 
 export function ReportarLotacao() {
   const mapaRef = useRef<HTMLDivElement>(null);
-  const mapaInstancia = useRef<L.Map | null>(null);
+  const { desenharRotas } = useMapaRotas(mapaRef, CENTRO_PADRAO, 14);
   const [linhas, setLinhas] = useState<Linha[]>([]);
   const [searchParams] = useSearchParams();
   const [linhaSelecionadaId, setLinhaSelecionadaId] = useState<number | ''>('');
@@ -21,14 +22,6 @@ export function ReportarLotacao() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!mapaRef.current) return;
-    const mapa = L.map(mapaRef.current).setView(CENTRO_PADRAO, 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19
-    }).addTo(mapa);
-    mapaInstancia.current = mapa;
-
     api.get<Linha[]>('/linhas').then(({ data }) => {
       setLinhas(data);
       const linhaIdQuery = searchParams.get('linhaId');
@@ -36,35 +29,17 @@ export function ReportarLotacao() {
         setLinhaSelecionadaId(Number(linhaIdQuery));
       }
     });
-
-    return () => {
-      mapa.remove();
-      mapaInstancia.current = null;
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const mapa = mapaInstancia.current;
-    if (!mapa || linhaSelecionadaId === '') return;
+    if (linhaSelecionadaId === '') return;
 
     api.get<Rota>(`/rotas/${linhaSelecionadaId}`).then(({ data: rota }) => {
-      mapa.eachLayer((camada) => {
-        if (!(camada instanceof L.TileLayer)) mapa.removeLayer(camada);
-      });
-
       const paradasOrdenadas = [...rota.paradas].sort((a, b) => a.ordem - b.ordem);
-      const pontos = paradasOrdenadas.map((p) => [p.latitude, p.longitude] as [number, number]);
-
-      paradasOrdenadas.forEach((parada) => {
-        L.marker([parada.latitude, parada.longitude]).addTo(mapa).bindPopup(parada.nome);
-      });
-
-      if (pontos.length > 1) {
-        L.polyline(pontos, { color: '#1e4d94', weight: 4 }).addTo(mapa);
-        mapa.fitBounds(L.latLngBounds(pontos), { padding: [24, 24] });
-      }
+      desenharRotas([{ paradas: paradasOrdenadas, cor: COR_ROTA, linhaCodigo: rota.linhaCodigo }]);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [linhaSelecionadaId]);
 
   function obterLocalizacao(): Promise<{ latitude?: number; longitude?: number }> {

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SmartBus.Application.Auth;
 using SmartBus.Application.Dashboard;
+using SmartBus.Application.Enderecos;
 using SmartBus.Application.Linhas;
 using SmartBus.Application.Paradas;
 using SmartBus.Application.Previsao;
@@ -26,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IReporteService, ReporteService>();
         services.AddScoped<IPrevisaoService, PrevisaoService>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IEnderecoService, EnderecoService>();
 
         return services;
     }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartBus.Application.Abstractions;
 using SmartBus.Application.Common;
+using SmartBus.Infrastructure.Geocoding;
 using SmartBus.Infrastructure.Persistence;
 using SmartBus.Infrastructure.Security;
 
@@ -25,6 +26,12 @@ public static class DependencyInjection
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
         services.AddSingleton<IJwtService, JwtService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
+        services.AddHttpClient<IGeocodingService, NominatimGeocodingService>(client =>
+        {
+            client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(configuration["Geocoding:UserAgent"] ?? "SmartBus/1.0");
+        });
 
         return services;
     }

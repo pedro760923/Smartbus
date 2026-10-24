@@ -12,4 +12,5 @@ public class Usuario
     public DateTime CriadoEm { get; set; } = DateTime.UtcNow;
 
     public ICollection<Reporte> Reportes { get; set; } = new List<Reporte>();
+    public ICollection<HistoricoBusca> HistoricosBusca { get; set; } = new List<HistoricoBusca>();
 }

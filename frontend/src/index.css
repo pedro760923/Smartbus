@@ -1,5 +1,3 @@
-@import "leaflet/dist/leaflet.css";
-
 :root {
   /* Marca */
   --sb-primaria: #1e4d94;
@@ -86,8 +84,4 @@ button {
     box-shadow: 0 30px 60px rgba(20, 40, 90, 0.18);
     overflow: hidden;
   }
-}
-
-.leaflet-container {
-  font-family: inherit;
 }

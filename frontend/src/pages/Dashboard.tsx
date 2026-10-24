@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import * as L from 'leaflet';
 import { api } from '../lib/api';
+import { carregarGoogleMaps } from '../lib/googleMaps';
 import { Header } from '../components/Header';
 import type { DashboardKpis } from '../types';
 import './Dashboard.css';
@@ -8,7 +8,7 @@ import './Dashboard.css';
 export function Dashboard() {
   const [kpis, setKpis] = useState<DashboardKpis | null>(null);
   const mapaRef = useRef<HTMLDivElement>(null);
-  const mapaInstancia = useRef<L.Map | null>(null);
+  const mapaInstancia = useRef<google.maps.Map | null>(null);
 
   useEffect(() => {
     api.get<DashboardKpis>('/dashboard/kpis').then(({ data }) => setKpis(data));
@@ -20,27 +20,33 @@ export function Dashboard() {
     const pontos = kpis.mapaDeCalor;
     const centro = pontos[0] ?? { latitude: -23.6486, longitude: -46.5389 };
 
-    const mapa = L.map(mapaRef.current).setView([centro.latitude, centro.longitude], 14);
-    mapaInstancia.current = mapa;
+    carregarGoogleMaps().then(() => {
+      if (!mapaRef.current || mapaInstancia.current) return;
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors',
-      maxZoom: 19
-    }).addTo(mapa);
+      const mapa = new google.maps.Map(mapaRef.current, {
+        center: { lat: centro.latitude, lng: centro.longitude },
+        zoom: 14
+      });
+      mapaInstancia.current = mapa;
 
-    pontos.forEach((ponto) => {
-      L.circleMarker([ponto.latitude, ponto.longitude], {
-        radius: 8 + ponto.intensidade * 12,
-        color: '#c0392b',
-        fillColor: '#e74c3c',
-        fillOpacity: 0.5
-      })
-        .addTo(mapa)
-        .bindPopup(`${ponto.paradaNome} · intensidade ${(ponto.intensidade * 100).toFixed(0)}%`);
+      pontos.forEach((ponto) => {
+        const circulo = new google.maps.Circle({
+          map: mapa,
+          center: { lat: ponto.latitude, lng: ponto.longitude },
+          radius: 30 + ponto.intensidade * 120,
+          strokeColor: '#c0392b',
+          fillColor: '#e74c3c',
+          fillOpacity: 0.5
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+          content: `${ponto.paradaNome} · intensidade ${(ponto.intensidade * 100).toFixed(0)}%`
+        });
+        circulo.addListener('click', () => infoWindow.open({ map: mapa, anchor: circulo }));
+      });
     });
 
     return () => {
-      mapa.remove();
       mapaInstancia.current = null;
     };
   }, [kpis]);

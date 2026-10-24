@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/auth';
-import type { Parada } from '../types';
+import { useDebounce } from '../lib/useDebounce';
+import type { EnderecoSugestao, Parada } from '../types';
 import './Principal.css';
 
 export function Principal() {
@@ -10,17 +11,36 @@ export function Principal() {
   const [carregando, setCarregando] = useState(false);
   const [erroLocalizacao, setErroLocalizacao] = useState(false);
   const [termoBusca, setTermoBusca] = useState('');
+  const [sugestoes, setSugestoes] = useState<EnderecoSugestao[]>([]);
+  const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
+  const [enderecoSelecionado, setEnderecoSelecionado] = useState<string | null>(null);
   const [notaSelecionada, setNotaSelecionada] = useState(0);
   const [avaliacaoEnviada, setAvaliacaoEnviada] = useState(false);
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const termoDebounced = useDebounce(termoBusca, 400);
+  const esconderSugestoesTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
+    buscarPorLocalizacaoAtual();
+  }, []);
+
+  useEffect(() => {
+    if (!mostrarSugestoes) return;
+
+    api
+      .get<EnderecoSugestao[]>('/enderecos', { params: termoDebounced ? { termo: termoDebounced } : undefined })
+      .then((resp) => setSugestoes(resp.data))
+      .catch(() => setSugestoes([]));
+  }, [termoDebounced, mostrarSugestoes]);
+
+  function buscarPorLocalizacaoAtual() {
     if (!('geolocation' in navigator)) {
       setErroLocalizacao(true);
       return;
     }
 
+    setEnderecoSelecionado(null);
     setCarregando(true);
     navigator.geolocation.getCurrentPosition(
       (posicao) => {
@@ -36,13 +56,38 @@ export function Principal() {
         setCarregando(false);
       }
     );
-  }, []);
+  }
 
-  const paradasFiltradas = useMemo(() => {
-    const termo = termoBusca.trim().toLowerCase();
-    if (!termo) return paradas;
-    return paradas.filter((p) => p.nome.toLowerCase().includes(termo));
-  }, [paradas, termoBusca]);
+  function selecionarSugestao(sugestao: EnderecoSugestao) {
+    setTermoBusca(sugestao.endereco);
+    setMostrarSugestoes(false);
+    setEnderecoSelecionado(sugestao.endereco);
+
+    api.post('/enderecos/historico', {
+      termo: termoBusca,
+      endereco: sugestao.endereco,
+      latitude: sugestao.latitude,
+      longitude: sugestao.longitude
+    });
+
+    setCarregando(true);
+    api
+      .get<Parada[]>('/paradas/proximas', {
+        params: { latitude: sugestao.latitude, longitude: sugestao.longitude }
+      })
+      .then((resp) => setParadas(resp.data))
+      .finally(() => setCarregando(false));
+  }
+
+  function aoFocarBusca() {
+    clearTimeout(esconderSugestoesTimeout.current);
+    setMostrarSugestoes(true);
+  }
+
+  function aoDesfocarBusca() {
+    // Atraso para o clique numa sugestão registrar antes do dropdown sumir.
+    esconderSugestoesTimeout.current = setTimeout(() => setMostrarSugestoes(false), 150);
+  }
 
   function irParaOnibusDisponiveis() {
     navigate('/linhas');
@@ -71,15 +116,30 @@ export function Principal() {
         </button>
       </header>
 
-      <label className="home__busca">
-        <span className="home__busca-icone">🔍</span>
-        <input
-          type="search"
-          placeholder="Para onde vamos?"
-          value={termoBusca}
-          onChange={(e) => setTermoBusca(e.target.value)}
-        />
-      </label>
+      <div className="home__busca-container">
+        <label className="home__busca">
+          <span className="home__busca-icone">🔍</span>
+          <input
+            type="search"
+            placeholder="Para onde vamos?"
+            value={termoBusca}
+            onChange={(e) => setTermoBusca(e.target.value)}
+            onFocus={aoFocarBusca}
+            onBlur={aoDesfocarBusca}
+          />
+        </label>
+
+        {mostrarSugestoes && sugestoes.length > 0 && (
+          <ul className="home__sugestoes">
+            {sugestoes.map((sugestao) => (
+              <li key={sugestao.endereco} onMouseDown={() => selecionarSugestao(sugestao)}>
+                <span>{sugestao.doHistorico ? '🕑' : '📍'}</span>
+                <span>{sugestao.endereco}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <button className="cartao-destaque" onClick={irParaOnibusDisponiveis}>
         <span className="cartao-destaque__icone">🚌</span>
@@ -92,9 +152,16 @@ export function Principal() {
 
       <section className="home__paradas">
         <div className="home__paradas-cabecalho">
-          <h3>Paradas Próximas</h3>
+          <h3>{enderecoSelecionado ? 'Paradas perto do endereço buscado' : 'Paradas Próximas'}</h3>
           {carregando && <small>localizando...</small>}
         </div>
+
+        {enderecoSelecionado && (
+          <p className="home__endereco-ativo">
+            <span>📍 {enderecoSelecionado}</span>
+            <button onClick={buscarPorLocalizacaoAtual}>Usar minha localização</button>
+          </p>
+        )}
 
         {erroLocalizacao && (
           <p className="aviso-caixa">
@@ -104,7 +171,7 @@ export function Principal() {
         )}
 
         <ul className="lista-paradas">
-          {paradasFiltradas.map((parada) => (
+          {paradas.map((parada) => (
             <li key={parada.id} onClick={irParaOnibusDisponiveis}>
               <span className="lista-paradas__icone">🚏</span>
               <span className="lista-paradas__info">
@@ -114,7 +181,7 @@ export function Principal() {
               <span className="lista-paradas__seta">›</span>
             </li>
           ))}
-          {paradasFiltradas.length === 0 && !carregando && !erroLocalizacao && (
+          {paradas.length === 0 && !carregando && !erroLocalizacao && (
             <li className="lista-paradas__vazio">Nenhuma parada encontrada nas proximidades.</li>
           )}
         </ul>

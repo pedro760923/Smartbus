@@ -36,6 +36,11 @@
   padding: 0.3rem 0.5rem;
 }
 
+.home__busca-container {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
 .home__busca {
   display: flex;
   align-items: center;
@@ -44,7 +49,6 @@
   border: 1px solid var(--sb-borda);
   border-radius: var(--sb-raio-pill);
   padding: 0.8rem 1.1rem;
-  margin-bottom: 1.25rem;
 }
 
 .home__busca-icone {
@@ -59,6 +63,65 @@
   font-family: inherit;
   background: transparent;
   min-width: 0;
+}
+
+.home__sugestoes {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem;
+  background: var(--sb-cartao);
+  border: 1px solid var(--sb-borda);
+  border-radius: var(--sb-raio);
+  box-shadow: var(--sb-sombra);
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.home__sugestoes li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.home__sugestoes li:hover {
+  background: var(--sb-fundo);
+}
+
+.home__endereco-ativo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  background: var(--sb-fundo);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  margin: 0 0 0.8rem;
+  font-size: 0.8rem;
+}
+
+.home__endereco-ativo span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home__endereco-ativo button {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--sb-primaria);
+  font-weight: 700;
+  font-size: 0.75rem;
+  cursor: pointer;
 }
 
 .home__paradas-cabecalho {
