@@ -35,7 +35,7 @@ public class LinhasControllerTests : IClassFixture<SmartBusWebApplicationFactory
         resposta.StatusCode.Should().Be(HttpStatusCode.OK);
         var linhas = await resposta.Content.ReadFromJsonAsync<List<SmartBus.Application.Linhas.LinhaDto>>();
         linhas.Should().NotBeNull();
-        linhas!.Should().Contain(l => l.Codigo == "437"); // linha do DbSeeder
+        linhas!.Should().Contain(l => l.Codigo == "069"); // linha do DbSeeder
     }
 
     [Fact]
