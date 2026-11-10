@@ -66,12 +66,14 @@ public static class DbSeeder
 
         db.RotaParadas.AddRange(
             new RotaParada { LinhaId = linha069.Id, ParadaId = terminalSantoAndreLeste.Id, Ordem = 1 },
-            new RotaParada { LinhaId = linha069.Id, ParadaId = rudgeRamos.Id, Ordem = 2 },
-            new RotaParada { LinhaId = linha069.Id, ParadaId = ruaTocantinia.Id, Ordem = 3 },
+            new RotaParada { LinhaId = linha069.Id, ParadaId = fundacaoSantoAndre.Id, Ordem = 2 },
+            new RotaParada { LinhaId = linha069.Id, ParadaId = rudgeRamos.Id, Ordem = 3 },
+            new RotaParada { LinhaId = linha069.Id, ParadaId = ruaTocantinia.Id, Ordem = 4 },
 
             new RotaParada { LinhaId = linha323.Id, ParadaId = terminalSantoAndreLeste.Id, Ordem = 1 },
-            new RotaParada { LinhaId = linha323.Id, ParadaId = avTaboao.Id, Ordem = 2 },
-            new RotaParada { LinhaId = linha323.Id, ParadaId = jardimClimax.Id, Ordem = 3 },
+            new RotaParada { LinhaId = linha323.Id, ParadaId = fundacaoSantoAndre.Id, Ordem = 2 },
+            new RotaParada { LinhaId = linha323.Id, ParadaId = avTaboao.Id, Ordem = 3 },
+            new RotaParada { LinhaId = linha323.Id, ParadaId = jardimClimax.Id, Ordem = 4 },
 
             new RotaParada { LinhaId = linhaB49.Id, ParadaId = vilaPalmares.Id, Ordem = 1 },
             new RotaParada { LinhaId = linhaB49.Id, ParadaId = fundacaoSantoAndre.Id, Ordem = 2 },

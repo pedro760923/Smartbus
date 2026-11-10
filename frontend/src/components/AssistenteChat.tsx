@@ -48,6 +48,7 @@ export function AssistenteChat() {
 
   return (
     <div className="assistente">
+      {aberto && <div className="assistente__fundo" onClick={() => setAberto(false)} aria-hidden="true" />}
       {aberto && (
         <section className="assistente__painel">
           <header className="assistente__cabecalho">

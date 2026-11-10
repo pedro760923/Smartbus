@@ -9,6 +9,17 @@
   gap: 0.75rem;
 }
 
+/* Desfoca o app atrás do chat aberto, dando ênfase ao formulário da conversa.
+   Fica atrás do painel/bolinha (que têm z-index maior dentro de .assistente). */
+.assistente__fundo {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(20, 30, 60, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
 .assistente__bolinha {
   width: 56px;
   height: 56px;
