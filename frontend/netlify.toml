@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Sem isso, atualizar a página em /login ou /principal retorna 404 (SPA).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
