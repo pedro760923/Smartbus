@@ -60,6 +60,7 @@ export interface Parada {
   latitude: number;
   longitude: number;
   distanciaMetros?: number;
+  linhas?: string[];
 }
 
 export interface RotaParada extends Parada {

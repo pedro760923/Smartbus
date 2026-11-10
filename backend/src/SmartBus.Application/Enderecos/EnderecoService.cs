@@ -70,7 +70,7 @@ public class EnderecoService : IEnderecoService
 
         if (existente is not null)
         {
-            existente.Termo = request.Termo;
+            existente.Termo = request.Termo ?? request.Endereco;
             existente.Latitude = request.Latitude;
             existente.Longitude = request.Longitude;
             existente.CriadoEm = DateTime.UtcNow;
@@ -80,7 +80,7 @@ public class EnderecoService : IEnderecoService
             existente = new HistoricoBusca
             {
                 UsuarioId = usuarioId,
-                Termo = request.Termo,
+                Termo = request.Termo ?? request.Endereco,
                 Endereco = request.Endereco,
                 Latitude = request.Latitude,
                 Longitude = request.Longitude

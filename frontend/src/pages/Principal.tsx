@@ -64,7 +64,7 @@ export function Principal() {
     setEnderecoSelecionado(sugestao.endereco);
 
     api.post('/enderecos/historico', {
-      termo: termoBusca,
+      termo: termoBusca || sugestao.endereco,
       endereco: sugestao.endereco,
       latitude: sugestao.latitude,
       longitude: sugestao.longitude
@@ -73,7 +73,7 @@ export function Principal() {
     setCarregando(true);
     api
       .get<Parada[]>('/paradas/proximas', {
-        params: { latitude: sugestao.latitude, longitude: sugestao.longitude }
+        params: { latitude: sugestao.latitude, longitude: sugestao.longitude, raioMetros: 2500 }
       })
       .then((resp) => setParadas(resp.data))
       .finally(() => setCarregando(false));
@@ -176,6 +176,7 @@ export function Principal() {
               <span className="lista-paradas__icone">🚏</span>
               <span className="lista-paradas__info">
                 <strong>{parada.nome}</strong>
+                {parada.linhas && parada.linhas.length > 0 && <small>Linhas: {parada.linhas.join(', ')}</small>}
                 {parada.distanciaMetros != null && <small>{Math.round(parada.distanciaMetros)} m de você</small>}
               </span>
               <span className="lista-paradas__seta">›</span>

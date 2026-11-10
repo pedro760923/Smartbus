@@ -5,7 +5,7 @@ namespace SmartBus.Application.Enderecos;
 public record EnderecoSugestaoDto(string Endereco, double Latitude, double Longitude, bool DoHistorico);
 
 public record NovoHistoricoRequest(
-    [Required] string Termo,
+    string? Termo,
     [Required] string Endereco,
     [Required] double Latitude,
     [Required] double Longitude

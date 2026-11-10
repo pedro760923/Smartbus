@@ -25,6 +25,12 @@ public class ParadaService : IParadaService
     {
         var paradas = await _db.Paradas.ToListAsync();
 
+        var linhasPorParada = (await _db.RotaParadas
+                .Select(rp => new { rp.ParadaId, rp.Linha.Codigo })
+                .ToListAsync())
+            .GroupBy(x => x.ParadaId)
+            .ToDictionary(g => g.Key, g => g.Select(x => x.Codigo).Distinct().OrderBy(c => c).ToList());
+
         return paradas
             .Select(p => new
             {
@@ -33,7 +39,7 @@ public class ParadaService : IParadaService
             })
             .Where(x => x.Distancia <= raioMetros)
             .OrderBy(x => x.Distancia)
-            .Select(x => new ParadaDto(x.Parada.Id, x.Parada.Nome, x.Parada.Latitude, x.Parada.Longitude, Math.Round(x.Distancia, 0)))
+            .Select(x => new ParadaDto(x.Parada.Id, x.Parada.Nome, x.Parada.Latitude, x.Parada.Longitude, Math.Round(x.Distancia, 0), linhasPorParada.GetValueOrDefault(x.Parada.Id)))
             .ToList();
     }
 }
